@@ -8,7 +8,7 @@
     <version>1.0</version>
   </parent>
   <groupId>clarin.cmdi</groupId>
-  <artifactId>CMDValidate</artifactId>
+  <artifactId>cmd-validate</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>CMDValidate</name>
     <build>
@@ -40,4 +40,10 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+  <distributionManagement>
+        <snapshotRepository>
+            <id>MPI-Snapshots</id>
+            <url>http://lux15.mpi.nl/nexus/content/repositories/MPI-Snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
