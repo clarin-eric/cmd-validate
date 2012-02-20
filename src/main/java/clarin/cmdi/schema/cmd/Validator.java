@@ -1,17 +1,28 @@
 package clarin.cmdi.schema.cmd;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import net.sf.saxon.s9api.*;
 import clarin.cmdi.xml.Saxon;
+import java.io.File;
+import java.io.InputStream;
+import net.sf.saxon.s9api.DOMDestination;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmDestination;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.s9api.XsltTransformer;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -68,9 +79,47 @@ public class Validator {
      * @return An executable XSLT
      * @throws Exception 
      */
-    static XsltExecutable buildTransformer(java.net.URI uri) throws Exception {
-	XdmNode xslDoc = Saxon.buildDocument(new javax.xml.transform.stream.StreamSource(new java.io.File(uri)));
-	return Saxon.buildTransformer(xslDoc);
+    static XsltExecutable buildTransformer(File file) throws ValidatorException {
+	try {
+	    XdmNode xslDoc = Saxon.buildDocument(new javax.xml.transform.stream.StreamSource(file));
+	    return Saxon.buildTransformer(xslDoc);
+	} catch (SaxonApiException ex) {
+	    throw new ValidatorException(ex);
+	}
+    }
+
+    /**
+     * Convenience method to build a XSLT transformer from a resource.
+     * 
+     * @param uri The location of the resource
+     * @return An executable XSLT
+     * @throws Exception 
+     */
+    static XsltExecutable buildTransformer(URL url) throws ValidatorException {
+	try {
+	    XdmNode xslDoc = Saxon.buildDocument(new javax.xml.transform.stream.StreamSource(url.toExternalForm()));
+	    return Saxon.buildTransformer(xslDoc);
+	} catch (SaxonApiException ex) {
+	    throw new ValidatorException(ex);
+	}
+
+    }
+
+    /**
+     * Convenience method to build a XSLT transformer from a resource.
+     * 
+     * @param uri The location of the resource
+     * @return An executable XSLT
+     * @throws Exception 
+     */
+    static XsltExecutable buildTransformer(InputStream stream) throws ValidatorException {
+	try {
+	    XdmNode xslDoc = Saxon.buildDocument(new javax.xml.transform.stream.StreamSource(stream));
+	    return Saxon.buildTransformer(xslDoc);
+	} catch (SaxonApiException ex) {
+	    throw new ValidatorException(ex);
+	}
+
     }
 
     /**
@@ -79,14 +128,17 @@ public class Validator {
      * @return An in-memory representation of the grammar
      * @throws Exception 
      */
-    private synchronized Schema getSchema() throws Exception {
+    private synchronized Schema getSchema() throws ValidatorException, IOException {
 	if (cmdSchema == null) {
 	    SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
 	    // Load the CMD XSD.
 	    Source schemaFile = new StreamSource(cmdSchemaUri.openStream());
-	    cmdSchema = factory.newSchema(schemaFile);
-
+	    try {
+		cmdSchema = factory.newSchema(schemaFile);
+	    } catch (SAXException ex) {
+		throw new ValidatorException(ex);
+	    }
 	}
 	return cmdSchema;
     }
@@ -100,25 +152,31 @@ public class Validator {
      * @return Is the CMD profile/component valid or not?
      * @throws Exception 
      */
-    public boolean validateXSD(XdmNode src) throws Exception {
-	Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-	DOMDestination dst = new DOMDestination(doc);
-	Saxon.getProcessor().writeXdmValue(src, dst);
-
+    public boolean validateXSD(XdmNode src) throws ValidatorException, IOException {
 	try {
-	    // Create a Validator object, which can be used to validate
-	    // an instance document.
-	    javax.xml.validation.Validator validator = getSchema().newValidator();
+	    Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+	    DOMDestination dst = new DOMDestination(doc);
+	    Saxon.getProcessor().writeXdmValue(src, dst);
 
-	    // Validate the DOM tree.
-	    validator.validate(new DOMSource(doc));
+	    try {
+		// Create a Validator object, which can be used to validate
+		// an instance document.
+		javax.xml.validation.Validator validator = getSchema().newValidator();
 
-	} catch (SAXException e) {
-	    Message msg = new Message();
-	    msg.error = true;
-	    msg.text = e.getMessage();
-	    msgList.add(msg);
-	    return false;
+		// Validate the DOM tree.
+		validator.validate(new DOMSource(doc));
+
+	    } catch (SAXException e) {
+		Message msg = new Message();
+		msg.error = true;
+		msg.text = e.getMessage();
+		msgList.add(msg);
+		return false;
+	    }
+	} catch (SaxonApiException ex) {
+	    throw new ValidatorException(ex);
+	} catch (ParserConfigurationException ex) {
+	    throw new ValidatorException(ex);
 	}
 
 	return true;
@@ -130,27 +188,31 @@ public class Validator {
      * @return The compiled Schematron XSLT
      * @throws Exception 
      */
-    private synchronized XsltExecutable getSchematron() throws Exception {
+    private synchronized XsltExecutable getSchematron() throws ValidatorException, IOException {
 	if (cmdSchematron == null) {
-	    // Load the schema
-	    XdmNode schema = Saxon.buildDocument(new javax.xml.transform.stream.StreamSource(cmdSchemaUri.openStream()));
-	    // Load the Schematron XSL to extract the Schematron rules;
-	    XsltTransformer extractSchXsl = buildTransformer(Validator.class.getResource("/schematron/ExtractSchFromXSD-2.xsl").toURI()).load();
-	    // Load the Schematron XSLs to 'compile' Schematron rules;
-	    XsltTransformer includeSchXsl = buildTransformer(Validator.class.getResource("/schematron/iso_dsdl_include.xsl").toURI()).load();
-	    XsltTransformer expandSchXsl = buildTransformer(Validator.class.getResource("/schematron/iso_abstract_expand.xsl").toURI()).load();
-	    XsltTransformer compileSchXsl = buildTransformer(Validator.class.getResource("/schematron/iso_svrl_for_xslt2.xsl").toURI()).load();
-	    // Setup the pipeline
-	    XdmDestination destination = new XdmDestination();
-	    extractSchXsl.setSource(schema.asSource());
-	    extractSchXsl.setDestination(includeSchXsl);
-	    includeSchXsl.setDestination(expandSchXsl);
-	    expandSchXsl.setDestination(compileSchXsl);
-	    compileSchXsl.setDestination(destination);
-	    // Extract the Schematron rules from the schema        
-	    extractSchXsl.transform();
-	    // Compile the Schematron rules XSL
-	    cmdSchematron = Saxon.buildTransformer(destination.getXdmNode());
+	    try {
+		// Load the schema
+		XdmNode schema = Saxon.buildDocument(new javax.xml.transform.stream.StreamSource(cmdSchemaUri.openStream()));
+		// Load the Schematron XSL to extract the Schematron rules;
+		XsltTransformer extractSchXsl = buildTransformer(Validator.class.getResource("/schematron/ExtractSchFromXSD-2.xsl")).load();
+		// Load the Schematron XSLs to 'compile' Schematron rules;
+		XsltTransformer includeSchXsl = buildTransformer(Validator.class.getResource("/schematron/iso_dsdl_include.xsl")).load();
+		XsltTransformer expandSchXsl = buildTransformer(Validator.class.getResource("/schematron/iso_abstract_expand.xsl")).load();
+		XsltTransformer compileSchXsl = buildTransformer(Validator.class.getResource("/schematron/iso_svrl_for_xslt2.xsl")).load();
+		// Setup the pipeline
+		XdmDestination destination = new XdmDestination();
+		extractSchXsl.setSource(schema.asSource());
+		extractSchXsl.setDestination(includeSchXsl);
+		includeSchXsl.setDestination(expandSchXsl);
+		expandSchXsl.setDestination(compileSchXsl);
+		compileSchXsl.setDestination(destination);
+		// Extract the Schematron rules from the schema        
+		extractSchXsl.transform();
+		// Compile the Schematron rules XSL
+		cmdSchematron = Saxon.buildTransformer(destination.getXdmNode());
+	    } catch (SaxonApiException ex) {
+		throw new ValidatorException(ex);
+	    }
 	}
 	return cmdSchematron;
     }
@@ -162,17 +224,21 @@ public class Validator {
      * @return Is the CMD profile/component valid or not?
      * @throws Exception 
      */
-    public boolean validateSchematron(XdmNode src) throws Exception {
-	XsltTransformer schematronXsl = getSchematron().load();
-	schematronXsl.setSource(src.asSource());
-	XdmDestination destination = new XdmDestination();
-	schematronXsl.setDestination(destination);
-	schematronXsl.transform();
+    public boolean validateSchematron(XdmNode src) throws ValidatorException, IOException {
+	try {
+	    XsltTransformer schematronXsl = getSchematron().load();
+	    schematronXsl.setSource(src.asSource());
+	    XdmDestination destination = new XdmDestination();
+	    schematronXsl.setDestination(destination);
+	    schematronXsl.transform();
 
-	validationReport = destination.getXdmNode();
+	    validationReport = destination.getXdmNode();
 
-	Saxon.declareXPathNamespace("svrl", "http://purl.oclc.org/dsdl/svrl");
-	return ((net.sf.saxon.value.BooleanValue) Saxon.evaluateXPath(validationReport, "empty(//svrl:failed-assert[(preceding-sibling::svrl:fired-rule)[last()][empty(@role) or @role!='warning']])").evaluateSingle().getUnderlyingValue()).getBooleanValue();
+	    Saxon.declareXPathNamespace("svrl", "http://purl.oclc.org/dsdl/svrl");
+	    return ((net.sf.saxon.value.BooleanValue) Saxon.evaluateXPath(validationReport, "empty(//svrl:failed-assert[(preceding-sibling::svrl:fired-rule)[last()][empty(@role) or @role!='warning']])").evaluateSingle().getUnderlyingValue()).getBooleanValue();
+	} catch (SaxonApiException ex) {
+	    throw new ValidatorException(ex);
+	}
     }
 
     /**
@@ -185,21 +251,26 @@ public class Validator {
      * @return Is the CMD profile/component valid or not?
      * @throws Exception 
      */
-    public boolean validateProfile(Source prof) throws Exception {
+    public boolean validateProfile(Source prof) throws ValidatorException, IOException {
 	// Initalize
 	msgList = new java.util.ArrayList<Message>();
 	validationReport = null;
 
-	// load the document
-	XdmNode doc = Saxon.buildDocument(prof);
+	try {
+	    // load the document
+	    XdmNode doc = Saxon.buildDocument(prof);
 
-	// step 1: validate against XML Schema
-	if (!this.validateXSD(doc)) {
-	    return false;
+	    // step 1: validate against XML Schema
+	    if (!this.validateXSD(doc)) {
+		return false;
+	    }
+
+	    // step 2: validate Schematron rules
+	    return validateSchematron(doc);
+	} catch (SaxonApiException ex) {
+	    throw new ValidatorException(ex);
 	}
 
-	// step 2: validate Schematron rules
-	return validateSchematron(doc);
     }
 
     /**
@@ -208,18 +279,22 @@ public class Validator {
      * @return The list of messages
      * @throws Exception 
      */
-    public synchronized List<Message> getMessages() throws Exception {
+    public synchronized List<Message> getMessages() throws ValidatorException {
 	if (validationReport != null) {
-	    for (XdmItem assertion : Saxon.evaluateXPath(validationReport, "//svrl:failed-assert")) {
-		Message msg = new Message();
-		msg.context = Saxon.evaluateXPath(assertion, "(preceding-sibling::svrl:fired-rule)[last()]/@context").evaluateSingle().getStringValue();
-		msg.test = ((XdmNode) assertion).getAttributeValue(new QName("test"));
-		msg.location = ((XdmNode) assertion).getAttributeValue(new QName("location"));
-		msg.error = !((net.sf.saxon.value.BooleanValue) Saxon.evaluateXPath(assertion, "(preceding-sibling::svrl:fired-rule)[last()]/@role='warning'").evaluateSingle().getUnderlyingValue()).getBooleanValue();
-		msg.text = assertion.getStringValue();
-		msgList.add(msg);
+	    try {
+		for (XdmItem assertion : Saxon.evaluateXPath(validationReport, "//svrl:failed-assert")) {
+		    Message msg = new Message();
+		    msg.context = Saxon.evaluateXPath(assertion, "(preceding-sibling::svrl:fired-rule)[last()]/@context").evaluateSingle().getStringValue();
+		    msg.test = ((XdmNode) assertion).getAttributeValue(new QName("test"));
+		    msg.location = ((XdmNode) assertion).getAttributeValue(new QName("location"));
+		    msg.error = !((net.sf.saxon.value.BooleanValue) Saxon.evaluateXPath(assertion, "(preceding-sibling::svrl:fired-rule)[last()]/@role='warning'").evaluateSingle().getUnderlyingValue()).getBooleanValue();
+		    msg.text = assertion.getStringValue();
+		    msgList.add(msg);
+		}
+		validationReport = null;
+	    } catch (SaxonApiException ex) {
+		throw new ValidatorException(ex);
 	    }
-	    validationReport = null;
 	}
 	return msgList;
     }
@@ -232,8 +307,8 @@ public class Validator {
      */
     public void printMessages(java.io.PrintStream out) throws Exception {
 	for (Message msg : getMessages()) {
-	    out.println("" + (msg.error ? "ERROR" : "WARNING") + (msg.location != null ? " at " + msg.location : ""));
-	    out.println("  " + msg.text);
+	    out.println("" + (msg.isError() ? "ERROR" : "WARNING") + (msg.getLocation() != null ? " at " + msg.getLocation() : ""));
+	    out.println("  " + msg.getText());
 	}
     }
 
@@ -290,5 +365,40 @@ public class Validator {
 	 * The actual message.
 	 */
 	String text = null;
+
+	/**
+	 * @return the error
+	 */
+	public boolean isError() {
+	    return error;
+	}
+
+	/**
+	 * @return the context
+	 */
+	public String getContext() {
+	    return context;
+	}
+
+	/**
+	 * @return the test
+	 */
+	public String getTest() {
+	    return test;
+	}
+
+	/**
+	 * @return the location
+	 */
+	public String getLocation() {
+	    return location;
+	}
+
+	/**
+	 * @return the text
+	 */
+	public String getText() {
+	    return text;
+	}
     }
 }
