@@ -1,6 +1,9 @@
 package clarin.cmdi.schema.cmd;
 
+import clarin.cmdi.xml.Saxon;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -12,9 +15,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import clarin.cmdi.xml.Saxon;
-import java.io.File;
-import java.io.InputStream;
 import net.sf.saxon.s9api.DOMDestination;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -279,7 +279,7 @@ public class Validator {
      * @return The list of messages
      * @throws Exception 
      */
-    public synchronized List<Message> getMessages() throws ValidatorException {
+    public List<Message> getMessages() throws ValidatorException {
 	if (validationReport != null) {
 	    try {
 		for (XdmItem assertion : Saxon.evaluateXPath(validationReport, "//svrl:failed-assert")) {
