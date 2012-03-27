@@ -9,7 +9,7 @@
     </parent>
     <groupId>clarin.cmdi</groupId>
     <artifactId>cmd-validate</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>CMDValidate</name>
     <build>
 	<plugins>
