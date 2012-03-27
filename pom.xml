@@ -3,8 +3,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-	<artifactId>arbil.parent</artifactId>
-	<groupId>nl.mpi</groupId>
+	<groupId>clarin.cmdi</groupId>
+	<artifactId>componentRegistry.parent</artifactId>
 	<version>1.0</version>
     </parent>
     <groupId>clarin.cmdi</groupId>
