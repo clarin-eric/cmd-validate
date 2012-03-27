@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
 	<groupId>clarin.cmdi</groupId>
@@ -22,48 +22,21 @@
 		    <target>1.6</target>
 		</configuration>
 	    </plugin>
-	    <!--
 	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-shade-plugin</artifactId>
-		<version>1.5</version>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>exec-maven-plugin</artifactId>
+		<version>1.2.1</version>
 		<executions>
 		    <execution>
-			<phase>package</phase>
 			<goals>
-			    <goal>shade</goal>
+			    <goal>java</goal>
 			</goals>
-			<configuration>
-			    <relocations>
-				<relocation>
-				    <pattern>net.sf.saxon</pattern>
-				    <shadedPattern>net.shaded.sf.saxon</shadedPattern>
-				</relocation>
-				<relocation>
-				    <pattern>java.xml.xquery</pattern>
-				    <shadedPattern>java.shaded.xml.xquery</shadedPattern>
-				</relocation>
-			    </relocations>
-			    <artifactSet>
-				<excludes>
-				    <exclude>junit:junit</exclude>
-				</excludes>
-			    </artifactSet>
-			    <filters>
-				<filter>
-				    <artifact>*</artifact>
-				    <excludes>
-					<exclude>META-INF/*.SF</exclude>
-					<exclude>META-INF/*.RSA</exclude>
-					<exclude>META-INF/*.INF</exclude>
-				    </excludes>
-				</filter>
-			    </filters>
-			</configuration>
 		    </execution>
 		</executions>
-	    </plugin>    
-	    -->
+		<configuration>
+		    <mainClass>clarin.cmdi.schema.cmd.Validator</mainClass>
+		</configuration>
+	    </plugin>
 	</plugins>
     </build>
     <dependencies>

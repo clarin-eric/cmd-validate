@@ -28,10 +28,11 @@ import org.xml.sax.SAXException;
 
 /**
  * The Validator class handles the XSD and Schematron validation of CMD profile and component specifications.
- * 
+ *
  * The class caches thread safe versions of the XSD Schema and the Schematron XSLT.
  * So multiple instances of this Validator class can be used in parallel and use the same cached schema and transformer.
- * Although a single instance of the Validator class can't be accessed in parallel it can be used to validate multiple CMD profiles/components in sequence.
+ * Although a single instance of the Validator class can't be accessed in parallel it can be used to validate multiple CMD
+ * profiles/components in sequence.
  *
  * @author menwin
  * @author twagoo
@@ -65,6 +66,7 @@ public class Validator {
 
     /**
      * Creates a Validator that uses a specific schema specified by its URL
+     *
      * @param cmdSchemaUri Schema URI to use
      * @see #CMD_SCHEMA_URL
      */
@@ -74,10 +76,10 @@ public class Validator {
 
     /**
      * Convenience method to build a XSLT transformer from a resource.
-     * 
+     *
      * @param uri The location of the resource
      * @return An executable XSLT
-     * @throws Exception 
+     * @throws Exception
      */
     static XsltExecutable buildTransformer(File file) throws ValidatorException {
 	try {
@@ -90,10 +92,10 @@ public class Validator {
 
     /**
      * Convenience method to build a XSLT transformer from a resource.
-     * 
+     *
      * @param uri The location of the resource
      * @return An executable XSLT
-     * @throws Exception 
+     * @throws Exception
      */
     static XsltExecutable buildTransformer(URL url) throws ValidatorException {
 	try {
@@ -107,10 +109,10 @@ public class Validator {
 
     /**
      * Convenience method to build a XSLT transformer from a resource.
-     * 
+     *
      * @param uri The location of the resource
      * @return An executable XSLT
-     * @throws Exception 
+     * @throws Exception
      */
     static XsltExecutable buildTransformer(InputStream stream) throws ValidatorException {
 	try {
@@ -124,9 +126,9 @@ public class Validator {
 
     /**
      * Returns the CMD XSD schema, and loads it just-in-time.
-     * 
+     *
      * @return An in-memory representation of the grammar
-     * @throws Exception 
+     * @throws Exception
      */
     private synchronized Schema getSchema() throws ValidatorException, IOException {
 	if (cmdSchema == null) {
@@ -145,12 +147,12 @@ public class Validator {
 
     /**
      * Validation of a loaded CMD profile/component against the XSD schema.
-     * 
+     *
      * Unfortunately we can't use the Saxon XSD validator as that is limited to a commercial version of Saxon.
-     * 
+     *
      * @param src The loaded CMD profile/component
      * @return Is the CMD profile/component valid or not?
-     * @throws Exception 
+     * @throws Exception
      */
     public boolean validateXSD(XdmNode src) throws ValidatorException, IOException {
 	try {
@@ -184,9 +186,9 @@ public class Validator {
 
     /**
      * Returns the CMD Schematron XSLT, and loads it just-in-time.
-     * 
+     *
      * @return The compiled Schematron XSLT
-     * @throws Exception 
+     * @throws Exception
      */
     private synchronized XsltExecutable getSchematron() throws ValidatorException, IOException {
 	if (cmdSchematron == null) {
@@ -219,10 +221,10 @@ public class Validator {
 
     /**
      * Validation of a loaded CMD profile/component against the Schematron XSLT
-     * 
+     *
      * @param src The loaded CMD profile/component
      * @return Is the CMD profile/component valid or not?
-     * @throws Exception 
+     * @throws Exception
      */
     public boolean validateSchematron(XdmNode src) throws ValidatorException, IOException {
 	try {
@@ -243,13 +245,13 @@ public class Validator {
 
     /**
      * Validation of a loaded CMD profile/component against both the XSD and the Schematron XSLT
-     * 
+     *
      * After validation any messages can be accessed using the {@link getMessages()} method.
      * Notice that even if a CMD profile/component is valid there might be warning messages.
-     * 
+     *
      * @param prof The CMD profile/component
      * @return Is the CMD profile/component valid or not?
-     * @throws Exception 
+     * @throws Exception
      */
     public boolean validateProfile(Source prof) throws ValidatorException, IOException {
 	// Initalize
@@ -275,9 +277,9 @@ public class Validator {
 
     /**
      * Get the list of messages accumulated in the last validation run.
-     * 
+     *
      * @return The list of messages
-     * @throws Exception 
+     * @throws Exception
      */
     public List<Message> getMessages() throws ValidatorException {
 	if (validationReport != null) {
@@ -301,9 +303,9 @@ public class Validator {
 
     /**
      * Print the list of messages accumulated in the last validation run.
-     * 
+     *
      * @param out
-     * @throws Exception 
+     * @throws Exception
      */
     public void printMessages(java.io.PrintStream out) throws Exception {
 	for (Message msg : getMessages()) {
@@ -317,8 +319,34 @@ public class Validator {
      */
     public static void main(String[] args) {
 	try {
-	    Validator cmdValidator = new Validator(new URL(CMD_SCHEMA_URL));
-	    for (int i = 1; i < args.length; i++) {
+
+	    URL schemaURL = null;
+
+	    int startArg = 0;
+	    if (args.length > 0) {
+		if ("-s".equals(args[0].trim())) {
+		    if (args.length > 1) {
+			String schemaArg = args[1];
+			System.err.println("Using schema URL" + schemaArg);
+			schemaURL = new URL(schemaArg);
+			startArg = 2;
+		    } else {
+			printUsage(args);
+			return;
+		    }
+		}
+	    } else {
+		printUsage(args);
+		return;
+	    }
+
+	    if (schemaURL == null) {
+		schemaURL = new URL(CMD_SCHEMA_URL);
+	    }
+
+	    final Validator cmdValidator = new Validator(schemaURL);
+
+	    for (int i = startArg; i < args.length; i++) {
 		String f = args[i];
 		System.out.print("CMD validate[" + f + "] ");
 		try {
@@ -338,6 +366,10 @@ public class Validator {
 	    System.err.println("failed:");
 	    e.printStackTrace(System.out);
 	}
+    }
+
+    private static void printUsage(String[] args) {
+	System.err.println("Arguments: [-s schemafileURL] files...");
     }
 
     /**
