@@ -343,7 +343,7 @@ public class Validator {
     /**
      * Public inner class to represent validation messages.
      */
-    public final class Message {
+    public final static class Message {
 
 	/**
 	 * Is the message and error or an warning?
