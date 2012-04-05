@@ -24,6 +24,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 import org.w3c.dom.Document;
+import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
 
 /**
@@ -63,6 +64,7 @@ public class Validator {
      * The Schematron SVRL validation report
      */
     private XdmNode validationReport = null;
+    private LSResourceResolver resourceResolver = null;
 
     /**
      * Creates a Validator that uses a specific schema specified by its URL
@@ -133,6 +135,9 @@ public class Validator {
     private synchronized Schema getSchema() throws ValidatorException, IOException {
 	if (cmdSchema == null) {
 	    SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+	    if (getResourceResolver() != null) {
+		factory.setResourceResolver(getResourceResolver());
+	    }
 
 	    // Load the CMD XSD.
 	    Source schemaFile = new StreamSource(cmdSchemaUri.openStream());
@@ -370,6 +375,20 @@ public class Validator {
 
     private static void printUsage(String[] args) {
 	System.err.println("Arguments: [-s schemafileURL] files...");
+    }
+
+    /**
+     * @return Resource resolver used for schemata
+     */
+    protected LSResourceResolver getResourceResolver() {
+	return resourceResolver;
+    }
+
+    /**
+     * @param resourceResolver Resource resolver to use for schemata
+     */
+    public void setResourceResolver(LSResourceResolver resourceResolver) {
+	this.resourceResolver = resourceResolver;
     }
 
     /**

@@ -8,6 +8,7 @@ import clarin.cmdi.schema.cmd.Validator.Message;
 import java.util.List;
 import javax.xml.transform.Source;
 import org.junit.*;
+
 import static org.junit.Assert.*;
 
 /**
@@ -21,6 +22,7 @@ public class TestCMDValidate {
     @Before
     public void setUp() {
 	cmdValidator = new Validator(getClass().getResource("/schema/general-component-schema.xsd"));
+	cmdValidator.setResourceResolver(new ResourceResolver());
     }
 
     @After
