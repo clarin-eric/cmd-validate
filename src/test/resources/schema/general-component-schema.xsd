@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    $Revision: 1585 $ 
+    $Revision: 1816 $ 
     $Date: 2010-06-24 11:36:11 +0200 (Thu, 24 Jun 2010) $ 
 -->
 
@@ -11,8 +11,6 @@
 
     <!-- root element -->
     <xs:element name="CMD_ComponentSpec">
-        <xs:annotation>
-        </xs:annotation>
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="Header">
@@ -135,6 +133,11 @@
                                 </xs:annotation>
                             </xs:element>
                         </xs:choice>
+                        <xs:element name="Required" type="xs:boolean" default="false" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Is the attribute required or not.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -260,6 +263,7 @@
             <xs:enumeration value="gMonth"/>
             <xs:enumeration value="gYear"/>
             <xs:enumeration value="time"/>
+            <xs:enumeration value="dateTime"/>
         </xs:restriction>
     </xs:simpleType>
 
