@@ -37,9 +37,14 @@
     <xs:group name="group">
         <xs:annotation>
             <xs:appinfo>
-                <sch:pattern id="component" name="CMD component group">
+                <sch:pattern id="c_sibs" name="Check siblings">
                     <sch:rule context="CMD_Component|CMD_Element">
                         <sch:assert test="empty(preceding-sibling::*[@name=current()/@name])">Sibling components or elements should all have a different name. Found multiple components or elements named '<sch:value-of select="@name"/>'!</sch:assert>
+                    </sch:rule>
+                </sch:pattern>
+                <sch:pattern id="c_nest" name="Check nesting">
+                    <sch:rule context="CMD_Component[exists(CMD_Component|CMD_Element)]" role="warning">
+                        <sch:assert test="empty((CMD_Component|CMD_Element)[@name=current()/@name])">A nested component or element has the same name ('<sch:value-of select="@name"/>') as this component! Please, consider to rename one of them.</sch:assert>
                     </sch:rule>
                 </sch:pattern>
             </xs:appinfo>            
@@ -98,10 +103,19 @@
             <xs:element name="Attribute" minOccurs="1" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:appinfo>
-                        <sch:pattern id="attribute" name="CMD attribute">
+                        <sch:pattern id="a_res" name="Check reserved attribute names">
+                            <sch:rule context="Attribute">
+                                <sch:assert test="not(Name=('ref','ComponentId'))">Attribute name shouldn't be 'ref' or 'ComponentId', as these are used internally by CMD!</sch:assert>
+                            </sch:rule>
+                        </sch:pattern>
+                        <sch:pattern id="a_sibs" name="Check attribute siblings">
                             <sch:rule context="Attribute">
                                 <sch:assert test="empty(preceding-sibling::Attribute[Name=current()/Name])">All attributes in an attribute list should have a different name. Found multiple attributes named '<sch:value-of select="Name"/>'!</sch:assert>
-                                <sch:assert test="not(Name=('ref','ComponentId'))">Attribute name shouldn't be 'ref' or 'ComponentId', as these are used internally by CMD!</sch:assert>
+                            </sch:rule>
+                        </sch:pattern>
+                        <sch:pattern id="a_nest" name="Check attribute nesting">
+                            <sch:rule context="Attribute" role="warning">
+                                <sch:assert test="empty((ancestor::CMD_Component|ancestor::CMD_Element)[1][@name=current()/Name])">An attribute has the same name ('<sch:value-of select="Name"/>') as its element or component! Please, consider to rename one of them.</sch:assert>
                             </sch:rule>
                         </sch:pattern>
                     </xs:appinfo>            
