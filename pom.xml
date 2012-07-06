@@ -65,6 +65,11 @@
 	    <id>sonatype</id>
 	    <url>https://oss.sonatype.org/content/groups/public</url>
 	</repository>
+        <repository>
+            <id>cmdi.clarin.repository</id>
+            <name>Clarin Repository</name>
+            <url>http://catalog.clarin.eu/ds/nexus/content/groups/public/</url>
+        </repository>                                                    
     </repositories>
     <distributionManagement>
 	<snapshotRepository>
