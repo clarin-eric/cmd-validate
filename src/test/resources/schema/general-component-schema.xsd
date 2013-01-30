@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    $Revision: 1816 $ 
-    $Date: 2010-06-24 11:36:11 +0200 (Thu, 24 Jun 2010) $ 
+    $Revision$ 
+    $Date$ 
 -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sch="http://purl.oclc.org/dsdl/schematron">
@@ -270,6 +270,7 @@
             <xs:enumeration value="boolean"/>
             <xs:enumeration value="decimal"/>
             <xs:enumeration value="float"/>
+            <xs:enumeration value="int"/>
             <xs:enumeration value="string"/>
             <xs:enumeration value="anyURI"/>
             <xs:enumeration value="date"/>
