@@ -157,4 +157,18 @@ public class TestCMDValidate {
 	assertNotNull(message.test);
 	assertEquals("An attribute has the same name ('Service') as its element or component! Please, consider to rename one of them.",message.text);
     }
+
+    @Test
+    public void invalid_9() throws Exception {
+	assertFalse(validate("CLARINWebService_faulty-9.xml"));
+
+	final List<Message> messages = cmdValidator.getMessages();
+	assertEquals(1, messages.size());
+	Message message = messages.get(0);
+	assertTrue(message.error);
+	assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Component[1]/CMD_Component[2]/CMD_Component[1]/CMD_Component[2]/CMD_Component[3]", message.location);
+	assertEquals("empty(preceding-sibling::CMD_Component[@ComponentId=current()/@ComponentId])", message.test);
+	assertNotNull(message.text);
+    }
+
 }
