@@ -171,4 +171,9 @@ public class TestCMDValidate {
 	assertNotNull(message.text);
     }
 
+    @Test
+    public void invalid_10() throws Exception {
+	assertFalse(validate("CLARINWebService_faulty-10.xml"));
+	
+	}
 }
