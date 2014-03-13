@@ -37,12 +37,21 @@
     <xs:group name="group">
         <xs:annotation>
             <xs:appinfo>
-                <sch:pattern id="c_sibs" name="Check siblings">
+                <sch:pattern id="c_sibs">
+                    <sch:title>Check siblings</sch:title>
                     <sch:rule context="CMD_Component|CMD_Element">
                         <sch:assert test="empty(preceding-sibling::*[@name=current()/@name])">Sibling components or elements should all have a different name. Found multiple components or elements named '<sch:value-of select="@name"/>'!</sch:assert>
                     </sch:rule>
                 </sch:pattern>
-                <sch:pattern id="c_nest" name="Check nesting">
+                <sch:pattern id="c_csibs">
+                    <sch:title>Check component siblings</sch:title>
+                    <sch:rule context="CMD_Component">
+                        <sch:assert test="empty(preceding-sibling::CMD_Component[@ComponentId=current()/@ComponentId])">Sibling components should all be different. Found multiple components with id '<sch:value-of select="@ComponentId"/>'!</sch:assert>
+                    </sch:rule>
+                </sch:pattern>
+                <!-- TODO: the names of referenced external components are not known, so we can't currently check two or more of them use the same name -->
+                <sch:pattern id="c_nest">
+                    <sch:title>Check nesting</sch:title>
                     <sch:rule context="CMD_Component[exists(CMD_Component|CMD_Element)]" role="warning">
                         <sch:assert test="empty((CMD_Component|CMD_Element)[@name=current()/@name])">A nested component or element has the same name ('<sch:value-of select="@name"/>') as this component! Please, consider to rename one of them.</sch:assert>
                     </sch:rule>
@@ -103,17 +112,20 @@
             <xs:element name="Attribute" minOccurs="1" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:appinfo>
-                        <sch:pattern id="a_res" name="Check reserved attribute names">
+                        <sch:pattern id="a_res">
+                            <sch:title>Check reserved attribute names</sch:title>
                             <sch:rule context="Attribute">
                                 <sch:assert test="not(Name=('ref','ComponentId'))">Attribute name shouldn't be 'ref' or 'ComponentId', as these are used internally by CMD!</sch:assert>
                             </sch:rule>
                         </sch:pattern>
-                        <sch:pattern id="a_sibs" name="Check attribute siblings">
+                        <sch:pattern id="a_sibs">
+                            <sch:title>Check attribute siblings</sch:title>
                             <sch:rule context="Attribute">
                                 <sch:assert test="empty(preceding-sibling::Attribute[Name=current()/Name])">All attributes in an attribute list should have a different name. Found multiple attributes named '<sch:value-of select="Name"/>'!</sch:assert>
                             </sch:rule>
                         </sch:pattern>
-                        <sch:pattern id="a_nest" name="Check attribute nesting">
+                        <sch:pattern id="a_nest">
+                            <sch:title>Check attribute nesting</sch:title>
                             <sch:rule context="Attribute" role="warning">
                                 <sch:assert test="empty((ancestor::CMD_Component|ancestor::CMD_Element)[1][@name=current()/Name])">An attribute has the same name ('<sch:value-of select="Name"/>') as its element or component! Please, consider to rename one of them.</sch:assert>
                             </sch:rule>
@@ -248,6 +260,52 @@
     <xs:simpleType name="cardinality_type">
         <xs:annotation>
             <xs:documentation>cardinality for elements and components</xs:documentation>
+            <xs:appinfo>
+                <sch:pattern id="c_card">
+                    <sch:title>Check cardinalities</sch:title>
+                    <!--
+                        case minimum   maximum   check
+                        1    UNK       UNK       OK
+                        2    UNK       number    maximum ne 0
+                        3    UNK       unbounded OK
+                        4    number    UNK       minimum le 1
+                        5    number    number    minimum le maximum
+                        6    number    unbounded OK
+                        7    unbounded UNK       NOK
+                        8    unbounded number    NOK
+                        9    unbounded unbounded OK
+                        
+                        UNK can be either a missing attribute or an empty value, both can be detected with normalize-space(@...)=''
+                        
+                        default CardinalityMin is 1 (based on the XSD minOccurs default value)
+                        default CardinalityMax is 1 (based on the XSD maxOccurs default value)
+                        
+                        If a basic XSLT 2.0 engine, like Saxon HE, is used for Schematron validation we can't cast to xs:nonNegativeInteger.
+                        So we cast to xs:integer. The XSD validator should have already validated that the values are valid cardinality_types.
+                    -->
+                    <!-- skip case 1 -->
+                    <!-- case 2 -->
+                    <sch:rule context="*[(normalize-space(@CardinalityMin)='')][@CardinalityMax castable as xs:integer]">
+                        <sch:assert test="xs:integer(@CardinalityMax) ne 0">Maximum cardinality (0) cannot be lower than the default minimum cardinality (1)!</sch:assert>
+                    </sch:rule>
+                    <!-- skip case 3 -->
+                    <!-- case 4 -->
+                    <sch:rule context="*[@CardinalityMin castable as xs:integer][normalize-space(@CardinalityMax)='']">
+                        <sch:assert test="xs:integer(@CardinalityMin) le 1">Minimum cardinality (<sch:value-of select="@CardinalityMin"/>) should be lower or equal then the default maximum cardinality (1)!</sch:assert>
+                    </sch:rule>
+                    <!-- case 5 -->
+                    <sch:rule context="*[@CardinalityMin castable as xs:integer][@CardinalityMax castable as xs:integer]">
+                        <sch:assert test="xs:integer(@CardinalityMin) le xs:integer(@CardinalityMax)">Minimum cardinality (<sch:value-of select="@CardinalityMin"/>) should be lower or equal then the maximum cardinality (<sch:value-of select="@CardinalityMax"/>)!</sch:assert>
+                    </sch:rule>
+                    <!-- skip case 6 -->
+                    <!-- case 7, 8 and 9 -->
+                    <sch:rule context="*[@CardinalityMin='unbounded']">
+                        <!-- case 7 and 8 -->
+                        <sch:assert test="@CardinalityMax='unbounded'">Minimum cardinality (unbounded) can't be higher than the (default) maximum cardinality (<sch:value-of select="if (normalize-space(@CardinalityMax)='') then ('1') else (@CardinalityMax)"/>)!</sch:assert>
+                        <!-- skip case 9 -->
+                    </sch:rule>
+                </sch:pattern>
+            </xs:appinfo>
         </xs:annotation>
         <xs:union>
             <xs:simpleType>
@@ -304,7 +362,8 @@
     <xs:complexType name="item_type">
         <xs:annotation>
             <xs:appinfo>
-                <sch:pattern id="item" name="CMD enumeration item">
+                <sch:pattern id="item">
+                    <sch:title>CMD enumeration item</sch:title>
                     <sch:rule context="item">
                         <sch:assert test="empty(preceding-sibling::item[.=current()])">All items in an enumeration should be different. Found multiple items with value '<sch:value-of select="."/>'!</sch:assert>
                     </sch:rule>
