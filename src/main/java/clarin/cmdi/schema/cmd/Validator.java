@@ -451,5 +451,12 @@ public class Validator {
 	public String getText() {
 	    return text;
 	}
+
+        @Override
+        public String toString() {
+            return String.format("'%s' (%s @ %s)", getText(), getTest(), getLocation());
+        }
+        
+        
     }
 }
