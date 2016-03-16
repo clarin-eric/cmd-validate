@@ -43,7 +43,7 @@ public class Validator {
     /**
      * Default location of the CMD schema
      */
-    static final String CMD_SCHEMA_URL = "http://www.clarin.eu/cmd/general-component-schema.xsd";
+    static final String CMD_SCHEMA_URL = "https://infra.clarin.eu/CMDI/1.2/xsd/cmd-component.xsd";
     /**
      * The immutable location of the CMD schema that is used in this instance
      */
