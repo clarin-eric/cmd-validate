@@ -7,7 +7,8 @@
     <Component CardinalityMax="1" CardinalityMin="1" name="CLARINWebService">
         <Component CardinalityMax="1" CardinalityMin="1" ConceptLink="http://www.isocat.org/datcat/DC-4159" ComponentId="clarin.eu:cr1:c_1299509410081" name="Service">
             <AttributeList>
-                <Attribute name="ref" ConceptLink="http://www.isocat.org/datcat/DC-2547"><ValueScheme>
+                <!-- ERROR: attribute name should be NCName -->
+                <Attribute name="cmd:ref" ConceptLink="http://www.isocat.org/datcat/DC-2547"><ValueScheme>
                         <Vocabulary><enumeration><item AppInfo="" ConceptLink="">1.0</item></enumeration></Vocabulary>
                     </ValueScheme></Attribute>
             </AttributeList>

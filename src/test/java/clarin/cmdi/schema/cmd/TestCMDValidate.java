@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 /**
  * TODO: update tests and test resources to CMDI 1.2.
+ *
  * @author menwin
  */
 public class TestCMDValidate {
@@ -46,6 +47,7 @@ public class TestCMDValidate {
     }
 
     @Test
+    @Ignore("Until NCName is required for element and attribute names")
     public void invalid_1() throws Exception {
         assertFalse(validate("CLARINWebService_faulty-1.xml"));
 
@@ -53,9 +55,10 @@ public class TestCMDValidate {
         assertEquals(1, messages.size());
         Message message = messages.get(0);
         assertTrue(message.error);
-        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]", message.location);
-        assertEquals("not(Name=('ref','ComponentId'))", message.test);
-        assertNotNull(message.text);
+        //TODO: replace with new message (old test used be for illegal attribute name 'ref')
+//        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]", message.location);
+//        assertEquals("not(Name=('ref','ComponentId'))", message.test);
+//        assertNotNull(message.text);
     }
 
     @Test
@@ -63,12 +66,21 @@ public class TestCMDValidate {
         assertFalse(validate("CLARINWebService_faulty-2.xml"));
 
         final List<Message> messages = cmdValidator.getMessages();
-        assertEquals(1, messages.size());
-        Message message = messages.get(0);
-        assertTrue(message.error);
-        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]/ValueScheme[1]/enumeration[1]/item[2]", message.location);
-        assertEquals("empty(preceding-sibling::item[.=current()])", message.test);
-        assertNotNull(message.text);
+        assertEquals(2, messages.size());
+        {
+            Message message = messages.get(0);
+            assertTrue(message.error);
+            assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]/ValueScheme[1]/Vocabulary[1]/enumeration[1]/item[1]", message.location);
+            assertEquals("count(key('enums', current(), current()/parent::enumeration)) eq 1", message.test);
+            assertNotNull(message.text);
+        }
+        {
+            Message message = messages.get(1);
+            assertTrue(message.error);
+            assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]/ValueScheme[1]/Vocabulary[1]/enumeration[1]/item[2]", message.location);
+            assertEquals("count(key('enums', current(), current()/parent::enumeration)) eq 1", message.test);
+            assertNotNull(message.text);
+        }
     }
 
     @Test
@@ -173,11 +185,11 @@ public class TestCMDValidate {
         final List<Message> messages = cmdValidator.getMessages();
         assertEquals("There should be 5 invalid cardinality sets", 5, messages.size());
         assertEquals("UNK, number, maximum ne 0", "/ComponentSpec[1]/Component[1]/Element[3]", messages.get(0).location);
-        assertEquals("number, UNK, minimum le 1","/ComponentSpec[1]/Component[1]/Element[6]", messages.get(1).location);
-        assertEquals("number, number, minimum le maximum","/ComponentSpec[1]/Component[1]/Element[8]", messages.get(2).location);
+        assertEquals("number, UNK, minimum le 1", "/ComponentSpec[1]/Component[1]/Element[6]", messages.get(1).location);
+        assertEquals("number, number, minimum le maximum", "/ComponentSpec[1]/Component[1]/Element[8]", messages.get(2).location);
         assertEquals("unbounded, UNK", "/ComponentSpec[1]/Component[1]/Element[10]", messages.get(3).location);
         assertEquals("unbounded, 1", "/ComponentSpec[1]/Component[1]/Element[11]", messages.get(4).location);
     }
-    
+
     //add test for schematron phase
 }

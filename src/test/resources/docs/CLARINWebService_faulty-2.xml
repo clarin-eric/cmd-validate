@@ -8,7 +8,13 @@
         <Component CardinalityMax="1" CardinalityMin="1" ConceptLink="http://www.isocat.org/datcat/DC-4159" ComponentId="clarin.eu:cr1:c_1299509410081" name="Service">
             <AttributeList>
                 <Attribute name="CoreVersion" ConceptLink="http://www.isocat.org/datcat/DC-2547"><ValueScheme>
-                        <Vocabulary><enumeration><item AppInfo="" ConceptLink="">1.0</item></enumeration></Vocabulary>
+                        <Vocabulary>
+                            <enumeration>
+                                <item AppInfo="" ConceptLink="">1.0</item>
+                                <!-- ERROR: double item in an enum -->
+                                <item AppInfo="" ConceptLink="">1.0</item>
+                            </enumeration>
+                        </Vocabulary>
                     </ValueScheme></Attribute>
             </AttributeList>
             <Element Multilingual="false" cue:DisplayPriority="1" CardinalityMax="1" CardinalityMin="1" ValueScheme="string" ConceptLink="http://www.isocat.org/datcat/DC-4160" name="Name"><Documentation>The name of the web service or set of web services.</Documentation></Element>
