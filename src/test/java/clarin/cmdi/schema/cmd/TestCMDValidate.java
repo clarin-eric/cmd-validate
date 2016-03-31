@@ -53,7 +53,7 @@ public class TestCMDValidate {
         assertEquals(1, messages.size());
         Message message = messages.get(0);
         assertTrue(message.error);
-        assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Component[1]/AttributeList[1]/Attribute[1]", message.location);
+        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]", message.location);
         assertEquals("not(Name=('ref','ComponentId'))", message.test);
         assertNotNull(message.text);
     }
@@ -66,7 +66,7 @@ public class TestCMDValidate {
         assertEquals(1, messages.size());
         Message message = messages.get(0);
         assertTrue(message.error);
-        assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Component[1]/AttributeList[1]/Attribute[1]/ValueScheme[1]/enumeration[1]/item[2]", message.location);
+        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]/ValueScheme[1]/enumeration[1]/item[2]", message.location);
         assertEquals("empty(preceding-sibling::item[.=current()])", message.test);
         assertNotNull(message.text);
     }
@@ -79,8 +79,8 @@ public class TestCMDValidate {
         assertEquals(1, messages.size());
         Message message = messages.get(0);
         assertTrue(message.error);
-        assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Component[1]/AttributeList[1]/Attribute[2]", message.location);
-        assertEquals("empty(preceding-sibling::Attribute[Name=current()/Name])", message.test);
+        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[2]", message.location);
+        assertEquals("empty(preceding-sibling::Attribute[@name = current()/@name])", message.test);
         assertNotNull(message.text);
     }
 
@@ -92,8 +92,8 @@ public class TestCMDValidate {
         assertEquals(1, messages.size());
         Message message = messages.get(0);
         assertTrue(message.error);
-        assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Component[1]/CMD_Component[2]", message.location);
-        assertEquals("empty(preceding-sibling::*[@name=current()/@name])", message.test);
+        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/Component[2]", message.location);
+        assertEquals("empty(preceding-sibling::*[@name = current()/@name])", message.test);
         assertNotNull(message.text);
     }
 
@@ -105,8 +105,8 @@ public class TestCMDValidate {
         assertEquals(1, messages.size());
         Message message = messages.get(0);
         assertTrue(message.error);
-        assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Component[1]/CMD_Element[3]", message.location);
-        assertEquals("empty(preceding-sibling::*[@name=current()/@name])", message.test);
+        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/Element[3]", message.location);
+        assertEquals("empty(preceding-sibling::*[@name = current()/@name])", message.test);
         assertNotNull(message.text);
     }
 
@@ -118,8 +118,8 @@ public class TestCMDValidate {
         assertEquals(1, messages.size());
         Message message = messages.get(0);
         assertTrue(message.error);
-        assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Component[1]/CMD_Component[1]", message.location);
-        assertEquals("empty(preceding-sibling::*[@name=current()/@name])", message.test);
+        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/Component[1]", message.location);
+        assertEquals("empty(preceding-sibling::*[@name = current()/@name])", message.test);
         assertNotNull(message.text);
     }
 
@@ -144,12 +144,12 @@ public class TestCMDValidate {
         assertEquals(2, messages.size());
         Message message = messages.get(0);
         assertFalse(message.error);
-        assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]", message.location);
+        assertEquals("/ComponentSpec[1]/Component[1]", message.location);
         assertNotNull(message.test);
         assertEquals("A nested component or element has the same name ('Service') as this component! Please, consider to rename one of them.", message.text);
         message = messages.get(1);
         assertFalse(message.error);
-        assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Component[1]/AttributeList[1]/Attribute[1]", message.location);
+        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]", message.location);
         assertNotNull(message.test);
         assertEquals("An attribute has the same name ('Service') as its element or component! Please, consider to rename one of them.", message.text);
     }
@@ -162,8 +162,8 @@ public class TestCMDValidate {
         assertEquals(1, messages.size());
         Message message = messages.get(0);
         assertTrue(message.error);
-        assertEquals("/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Component[1]/CMD_Component[2]/CMD_Component[1]/CMD_Component[2]/CMD_Component[3]", message.location);
-        assertEquals("empty(preceding-sibling::CMD_Component[@ComponentId=current()/@ComponentId])", message.test);
+        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/Component[2]/Component[1]/Component[2]/Component[3]", message.location);
+        assertEquals("empty(preceding-sibling::Component[@ComponentId = current()/@ComponentId])", message.test);
         assertNotNull(message.text);
     }
 
@@ -172,11 +172,11 @@ public class TestCMDValidate {
         assertFalse("There should be invalid cardinality values", validate("CLARINWebService_faulty-10.xml"));
         final List<Message> messages = cmdValidator.getMessages();
         assertEquals("There should be 5 invalid cardinality sets", 5, messages.size());
-        assertEquals("UNK, number, maximum ne 0", "/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Element[3]", messages.get(0).location);
-        assertEquals("number, UNK, minimum le 1","/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Element[6]", messages.get(1).location);
-        assertEquals("number, number, minimum le maximum","/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Element[8]", messages.get(2).location);
-        assertEquals("unbounded, UNK", "/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Element[10]", messages.get(3).location);
-        assertEquals("unbounded, 1", "/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Element[11]", messages.get(4).location);
+        assertEquals("UNK, number, maximum ne 0", "/ComponentSpec[1]/Component[1]/Element[3]", messages.get(0).location);
+        assertEquals("number, UNK, minimum le 1","/ComponentSpec[1]/Component[1]/Element[6]", messages.get(1).location);
+        assertEquals("number, number, minimum le maximum","/ComponentSpec[1]/Component[1]/Element[8]", messages.get(2).location);
+        assertEquals("unbounded, UNK", "/ComponentSpec[1]/Component[1]/Element[10]", messages.get(3).location);
+        assertEquals("unbounded, 1", "/ComponentSpec[1]/Component[1]/Element[11]", messages.get(4).location);
     }
     
     //add test for schematron phase
