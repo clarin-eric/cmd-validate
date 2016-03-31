@@ -12,7 +12,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 /**
- *
+ * TODO: update tests and test resources to CMDI 1.2.
  * @author menwin
  */
 public class TestCMDValidate {
