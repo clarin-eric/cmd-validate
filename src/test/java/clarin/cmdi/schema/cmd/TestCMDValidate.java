@@ -149,6 +149,18 @@ public class TestCMDValidate {
     }
 
     @Test
+    public void invalid_8() throws Exception {
+        assertFalse("There should be invalid cardinality values", validate("CLARINWebService_faulty-8.xml"));
+        final List<Message> messages = cmdValidator.getMessages();
+        assertEquals("There should be 5 invalid cardinality sets", 5, messages.size());
+        assertEquals("UNK, number, maximum ne 0", "/ComponentSpec[1]/Component[1]/Element[3]", messages.get(0).location);
+        assertEquals("number, UNK, minimum le 1", "/ComponentSpec[1]/Component[1]/Element[6]", messages.get(1).location);
+        assertEquals("number, number, minimum le maximum", "/ComponentSpec[1]/Component[1]/Element[8]", messages.get(2).location);
+        assertEquals("unbounded, UNK", "/ComponentSpec[1]/Component[1]/Element[10]", messages.get(3).location);
+        assertEquals("unbounded, 1", "/ComponentSpec[1]/Component[1]/Element[11]", messages.get(4).location);
+    }
+
+    @Test
     public void invalid_9() throws Exception {
         assertFalse(validate("CLARINWebService_faulty-9.xml"));
 
@@ -159,18 +171,6 @@ public class TestCMDValidate {
         assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/Component[2]/Component[1]/Component[2]/Component[3]", message.location);
         assertEquals("empty(preceding-sibling::Component[@ComponentId = current()/@ComponentId])", message.test);
         assertNotNull(message.text);
-    }
-
-    @Test
-    public void invalid_10() throws Exception {
-        assertFalse("There should be invalid cardinality values", validate("CLARINWebService_faulty-10.xml"));
-        final List<Message> messages = cmdValidator.getMessages();
-        assertEquals("There should be 5 invalid cardinality sets", 5, messages.size());
-        assertEquals("UNK, number, maximum ne 0", "/ComponentSpec[1]/Component[1]/Element[3]", messages.get(0).location);
-        assertEquals("number, UNK, minimum le 1", "/ComponentSpec[1]/Component[1]/Element[6]", messages.get(1).location);
-        assertEquals("number, number, minimum le maximum", "/ComponentSpec[1]/Component[1]/Element[8]", messages.get(2).location);
-        assertEquals("unbounded, UNK", "/ComponentSpec[1]/Component[1]/Element[10]", messages.get(3).location);
-        assertEquals("unbounded, 1", "/ComponentSpec[1]/Component[1]/Element[11]", messages.get(4).location);
     }
 
     //add test for schematron phase
