@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package clarin.cmdi.schema.cmd;
 
 import clarin.cmdi.schema.cmd.Validator.Message;
@@ -21,7 +17,7 @@ public class TestCMDValidate {
 
     @Before
     public void setUp() {
-        cmdValidator = new Validator(getClass().getResource("/schema/general-component-schema.xsd"));
+        cmdValidator = new Validator(getClass().getResource("/schema/cmd-component.xsd"));
         cmdValidator.setResourceResolver(new ResourceResolver());
     }
 
@@ -182,4 +178,6 @@ public class TestCMDValidate {
         assertEquals("unbounded, UNK", "/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Element[10]", messages.get(3).location);
         assertEquals("unbounded, 1", "/CMD_ComponentSpec[1]/CMD_Component[1]/CMD_Element[11]", messages.get(4).location);
     }
+    
+    //add test for schematron phase
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><ComponentSpec xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cue="http://www.clarin.eu/cmdi/cues/1" CMDVersion="1.2" CMDOriginalVersion="1.1" isProfile="true" xsi:noNamespaceSchemaLocation="https://infra.clarin.eu/CMDI/1.x/xsd/cmd-component.xsd">
+<?xml version="1.0" encoding="UTF-8"?><ComponentSpec xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cue="http://www.clarin.eu/cmdi/cues/1" CMDVersion="1.2" CMDOriginalVersion="1.1" isProfile="true">
     <Header>
         <ID>clarin.eu:cr1:p_1311927752335</ID>
         <Name>CLARINWebService</Name>
@@ -13,8 +13,6 @@
             </AttributeList>
             <Element Multilingual="false" cue:DisplayPriority="1" CardinalityMax="1" CardinalityMin="1" ValueScheme="string" ConceptLink="http://www.isocat.org/datcat/DC-4160" name="Name"><Documentation>The name of the web service or set of web services.</Documentation></Element>
             <Element Multilingual="true" CardinalityMax="1" CardinalityMin="0" ValueScheme="string" ConceptLink="http://www.isocat.org/datcat/DC-2520" name="Description"><Documentation>A description of the web service or set of web services.</Documentation></Element>
-            <!-- ERROR: double CMD element/component -->
-            <Element CardinalityMax="1" CardinalityMin="1" ConceptLink="http://www.isocat.org/datcat/DC-4161" name="ServiceDescriptionLocation" ValueScheme="string"/>
             <Component CardinalityMax="1" CardinalityMin="1" ConceptLink="http://www.isocat.org/datcat/DC-4161" name="ServiceDescriptionLocation">
                 <Element Multilingual="true" CardinalityMax="1" CardinalityMin="0" ValueScheme="string" ConceptLink="http://www.isocat.org/datcat/DC-2520" name="Description"><Documentation>A description of the web service or set of web services.</Documentation></Element>
             </Component>
