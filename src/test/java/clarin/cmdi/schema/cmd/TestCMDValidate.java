@@ -149,24 +149,6 @@ public class TestCMDValidate {
     }
 
     @Test
-    public void valid_8() throws Exception {
-        assertTrue(validate("CLARINWebService_warn-8.xml"));
-
-        final List<Message> messages = cmdValidator.getMessages();
-        assertEquals(2, messages.size());
-        Message message = messages.get(0);
-        assertFalse(message.error);
-        assertEquals("/ComponentSpec[1]/Component[1]", message.location);
-        assertNotNull(message.test);
-        assertEquals("A nested component or element has the same name ('Service') as this component! Please, consider to rename one of them.", message.text);
-        message = messages.get(1);
-        assertFalse(message.error);
-        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]", message.location);
-        assertNotNull(message.test);
-        assertEquals("An attribute has the same name ('Service') as its element or component! Please, consider to rename one of them.", message.text);
-    }
-
-    @Test
     public void invalid_9() throws Exception {
         assertFalse(validate("CLARINWebService_faulty-9.xml"));
 
