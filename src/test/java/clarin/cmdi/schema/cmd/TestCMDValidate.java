@@ -28,8 +28,15 @@ public class TestCMDValidate {
     }
 
     protected boolean validate(String prof) throws Exception {
+        return validate(prof, null);
+    }
+
+    protected boolean validate(String prof, String phase) throws Exception {
         System.out.print("Test CMD validation [" + prof + "] ");
         Source src = new javax.xml.transform.stream.StreamSource(new java.io.File(TestCMDValidate.class.getResource("/docs/" + prof).toURI()));
+        if (phase != null) {
+            cmdValidator.setSchematronPhase(phase);
+        }
         boolean valid = cmdValidator.validateProfile(src);
         if (valid) {
             System.out.println("valid");
@@ -167,6 +174,25 @@ public class TestCMDValidate {
         assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/Component[2]/Component[1]/Component[2]/Component[3]", message.location);
         assertEquals("empty(preceding-sibling::Component[@ComponentId = current()/@ComponentId])", message.test);
         assertNotNull(message.text);
+    }
+
+    @Test
+    public void invalid_10() throws Exception {
+        assertFalse(validate("CLARINWebService_faulty-10.xml"));
+
+        final List<Message> messages = cmdValidator.getMessages();
+        assertEquals(1, messages.size());
+        Message message = messages.get(0);
+        assertTrue(message.error);
+        assertEquals("/ComponentSpec[1]", message.location);
+        assertEquals("normalize-space(Header/ID) != ''", message.test);
+        assertNotNull(message.text);
+    }
+
+    @Test
+    public void valid_10_preRegPhase() throws Exception {
+        final String phase = "preRegistration";
+        assertTrue("Should be valid with phase " + phase, validate("CLARINWebService_faulty-10.xml", phase));
     }
 
     //add test for schematron phase
