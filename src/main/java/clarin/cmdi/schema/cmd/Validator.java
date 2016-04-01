@@ -118,7 +118,7 @@ public class Validator {
         } catch (SaxonApiException ex) {
             throw new ValidatorException(ex);
         }
-        
+
     }
 
     /**
@@ -135,7 +135,7 @@ public class Validator {
         } catch (SaxonApiException ex) {
             throw new ValidatorException(ex);
         }
-        
+
     }
 
     /**
@@ -177,7 +177,7 @@ public class Validator {
             Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             DOMDestination dst = new DOMDestination(doc);
             Saxon.getProcessor().writeXdmValue(src, dst);
-            
+
             try {
                 // Create a Validator object, which can be used to validate
                 // an instance document.
@@ -185,7 +185,7 @@ public class Validator {
 
                 // Validate the DOM tree.
                 validator.validate(new DOMSource(doc));
-                
+
             } catch (SAXException e) {
                 Message msg = new Message();
                 msg.error = true;
@@ -198,7 +198,7 @@ public class Validator {
         } catch (ParserConfigurationException ex) {
             throw new ValidatorException(ex);
         }
-        
+
         return true;
     }
 
@@ -226,6 +226,11 @@ public class Validator {
                 includeSchXsl.setDestination(expandSchXsl);
                 expandSchXsl.setDestination(compileSchXsl);
                 compileSchXsl.setDestination(destination);
+
+                if (schematronPhase != null) {
+                    compileSchXsl.setParameter(SCHEMATRON_PHASE_PARAMETER, new XdmAtomicValue(schematronPhase));
+                }
+
                 // Extract the Schematron rules from the schema        
                 extractSchXsl.transform();
                 // Compile the Schematron rules XSL
@@ -250,13 +255,10 @@ public class Validator {
             schematronXsl.setSource(src.asSource());
             XdmDestination destination = new XdmDestination();
             schematronXsl.setDestination(destination);
-            if (schematronPhase != null) {
-                schematronXsl.setParameter(SCHEMATRON_PHASE_PARAMETER, new XdmAtomicValue(schematronPhase));
-            }
             schematronXsl.transform();
-            
+
             validationReport = destination.getXdmNode();
-            
+
             Saxon.declareXPathNamespace("svrl", "http://purl.oclc.org/dsdl/svrl");
             return ((net.sf.saxon.value.BooleanValue) Saxon.evaluateXPath(validationReport, "empty(//svrl:failed-assert[(preceding-sibling::svrl:fired-rule)[last()][empty(@role) or @role!='warning']])").evaluateSingle().getUnderlyingValue()).getBooleanValue();
         } catch (SaxonApiException ex) {
@@ -280,7 +282,7 @@ public class Validator {
         // Initalize
         msgList = new java.util.ArrayList<Message>();
         validationReport = null;
-        
+
         try {
             // load the document
             XdmNode doc = Saxon.buildDocument(prof);
@@ -295,7 +297,7 @@ public class Validator {
         } catch (SaxonApiException ex) {
             throw new ValidatorException(ex);
         }
-        
+
     }
 
     /**
@@ -342,9 +344,9 @@ public class Validator {
      */
     public static void main(String[] args) {
         try {
-            
+
             URL schemaURL = null;
-            
+
             int startArg = 0;
             if (args.length > 0) {
                 if ("-s".equals(args[0].trim())) {
@@ -362,13 +364,13 @@ public class Validator {
                 printUsage(args);
                 return;
             }
-            
+
             if (schemaURL == null) {
                 schemaURL = new URL(CMD_SCHEMA_URL);
             }
-            
+
             final Validator cmdValidator = new Validator(schemaURL);
-            
+
             for (int i = startArg; i < args.length; i++) {
                 String f = args[i];
                 System.out.print("CMD validate[" + f + "] ");
@@ -390,7 +392,7 @@ public class Validator {
             e.printStackTrace(System.out);
         }
     }
-    
+
     private static void printUsage(String[] args) {
         System.err.println("Arguments: [-s schemafileURL] files...");
     }
@@ -408,12 +410,18 @@ public class Validator {
     public void setResourceResolver(LSResourceResolver resourceResolver) {
         this.resourceResolver = resourceResolver;
     }
-    
+
     /**
-     * 
-     * @param schematronPhase phase to use for schematron validation - use null (default value) for default phase
+     *
+     * @param schematronPhase phase to use for schematron validation - use null
+     * (default value) for default phase
      */
     public void setSchematronPhase(String schematronPhase) {
+        if ((schematronPhase != null && !schematronPhase.equals(schematronPhase))
+                || (schematronPhase == null && this.schematronPhase != null)) {
+            //reset schematron, force a recompilation on next request via #getSchematron()
+            this.cmdSchematron = null;
+        }
         this.schematronPhase = schematronPhase;
     }
 
@@ -477,11 +485,11 @@ public class Validator {
         public String getText() {
             return text;
         }
-        
+
         @Override
         public String toString() {
             return String.format("'%s' (%s @ %s)", getText(), getTest(), getLocation());
         }
-        
+
     }
 }
