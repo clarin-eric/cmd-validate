@@ -47,7 +47,6 @@ public class TestCMDValidate {
     }
 
     @Test
-    @Ignore("Until NCName is required for element and attribute names")
     public void invalid_1() throws Exception {
         assertFalse(validate("CLARINWebService_faulty-1.xml"));
 
@@ -55,10 +54,7 @@ public class TestCMDValidate {
         assertEquals(1, messages.size());
         Message message = messages.get(0);
         assertTrue(message.error);
-        //TODO: replace with new message (old test used be for illegal attribute name 'ref')
-//        assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/AttributeList[1]/Attribute[1]", message.location);
-//        assertEquals("not(Name=('ref','ComponentId'))", message.test);
-//        assertNotNull(message.text);
+        assertNotNull(message.text);
     }
 
     @Test

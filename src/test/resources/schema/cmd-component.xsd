@@ -285,7 +285,7 @@
     </xs:complexType>
 
     <xs:attributeGroup name="attribute_attributes">
-        <xs:attribute name="name" type="xs:Name" use="required">
+        <xs:attribute name="name" type="xs:NCName" use="required">
             <xs:annotation>
                 <xs:documentation>The name of the attribute.</xs:documentation>
             </xs:annotation>
@@ -309,7 +309,7 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="element_attributes">
-        <xs:attribute name="name" type="xs:Name" use="required">
+        <xs:attribute name="name" type="xs:NCName" use="required">
             <xs:annotation>
                 <xs:documentation>The name of the element.</xs:documentation>
             </xs:annotation>
@@ -353,7 +353,7 @@
                 </sch:pattern>
             </xs:appinfo>
         </xs:annotation>
-        <xs:attribute name="name" type="xs:Name" use="optional"/>
+        <xs:attribute name="name" type="xs:NCName" use="optional"/>
         <xs:attribute name="ComponentId" type="xs:anyURI" use="optional">
             <xs:annotation>
                 <xs:documentation>Indicates that a component (using its unique ComponentId issued by the ComponentRegistry) should be included.</xs:documentation>
