@@ -172,7 +172,7 @@ public class TestCMDValidate {
         Message message = messages.get(0);
         assertTrue(message.error);
         assertEquals("/ComponentSpec[1]/Component[1]/Component[1]/Component[2]/Component[1]/Component[2]/Component[3]", message.location);
-        assertEquals("empty(preceding-sibling::Component[@ComponentId = current()/@ComponentId])", message.test);
+        assertEquals("empty(preceding-sibling::Component[@ComponentRef = current()/@ComponentRef])", message.test);
         assertNotNull(message.text);
     }
 
