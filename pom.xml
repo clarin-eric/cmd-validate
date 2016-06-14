@@ -41,16 +41,17 @@
 	    <version>4.10</version>
 	</dependency>
 	<dependency>
-	    <groupId>net.sf.saxon</groupId>
-	    <artifactId>Saxon-HE</artifactId>
-	    <version>9.5.1-4</version>
-	</dependency>
-	<dependency>
 	    <groupId>xml-resolver</groupId>
 	    <artifactId>xml-resolver</artifactId>
 	    <version>1.2</version>
 	    <scope>test</scope>
 	</dependency>
+        <dependency>
+            <!-- To inherit its Saxon dependency -->
+            <groupId>clarin.cmdi</groupId>
+            <artifactId>cmd-toolkit</artifactId>
+            <version>1.2-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
