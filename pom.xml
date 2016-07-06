@@ -62,9 +62,9 @@
             <url>https://oss.sonatype.org/content/groups/public</url>
         </repository>
         <repository>
-            <id>cmdi.clarin.repository</id>
+            <id>CLARIN repository</id>
             <name>Clarin Repository</name>
-            <url>http://catalog.clarin.eu/ds/nexus/content/groups/public/</url>
+            <url>https://nexus.clarin.eu/content/groups/public/</url>
         </repository>                                                    
     </repositories>
     <distributionManagement>
