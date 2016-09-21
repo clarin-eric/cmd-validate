@@ -1,65 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>clarin.cmdi</groupId>
     <artifactId>cmd-validate</artifactId>
-    <version>1.2</version>
-    <name>CMDValidate</name>
+    <version>2.0.0</version>
+    <name>CMDValidate (CMDI 1.2)</name>
     <build>
-	<plugins>
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-compiler-plugin</artifactId>
-		<version>2.3.2</version>
-		<configuration>
-		    <source>1.6</source>
-		    <target>1.6</target>
-		</configuration>
-	    </plugin>
-	    <plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>exec-maven-plugin</artifactId>
-		<version>1.2.1</version>
-		<executions>
-		    <execution>
-			<goals>
-			    <goal>java</goal>
-			</goals>
-		    </execution>
-		</executions>
-		<configuration>
-		    <mainClass>clarin.cmdi.schema.cmd.Validator</mainClass>
-		</configuration>
-	    </plugin>
-	</plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>clarin.cmdi.schema.cmd.Validator</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <dependencies>
-	<dependency>
-	    <groupId>junit</groupId>
-	    <artifactId>junit</artifactId>
-	    <version>4.10</version>
-	</dependency>
-	<dependency>
-	    <groupId>net.sf.saxon</groupId>
-	    <artifactId>Saxon-HE</artifactId>
-	    <version>9.5.1-4</version>
-	</dependency>
-	<dependency>
-	    <groupId>xml-resolver</groupId>
-	    <artifactId>xml-resolver</artifactId>
-	    <version>1.2</version>
-	    <scope>test</scope>
-	</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+        </dependency>
+        <dependency>
+            <groupId>xml-resolver</groupId>
+            <artifactId>xml-resolver</artifactId>
+            <version>1.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- To inherit its Saxon dependency -->
+            <groupId>clarin.cmdi</groupId>
+            <artifactId>cmd-toolkit</artifactId>
+            <version>1.2.0</version>
+        </dependency>
     </dependencies>
     <properties>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <repositories>
-	<repository>
-	    <id>sonatype</id>
-	    <url>https://oss.sonatype.org/content/groups/public</url>
-	</repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public</url>
+        </repository>
         <repository>
             <id>cmdi.clarin.repository</id>
             <name>Clarin Repository</name>
@@ -67,9 +68,13 @@
         </repository>                                                    
     </repositories>
     <distributionManagement>
-	<snapshotRepository>
-	    <id>MPI-Snapshots</id>
-	    <url>http://lux15.mpi.nl/nexus/content/repositories/MPI-Snapshots</url>
-	</snapshotRepository>
+        <snapshotRepository>
+            <id>CLARIN-Snapshot</id>
+            <url>https://nexus.clarin.eu/content/repositories/clarin-snapshot</url>
+        </snapshotRepository>
+        <repository>
+            <id>CLARIN</id>
+            <url>https://nexus.clarin.eu/content/repositories/Clarin</url>
+        </repository>
     </distributionManagement>
 </project>

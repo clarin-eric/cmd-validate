@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><ComponentSpec xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cue="http://www.clarin.eu/cmdi/cues/1" CMDVersion="1.2" CMDOriginalVersion="1.1" isProfile="true" xsi:noNamespaceSchemaLocation="https://infra.clarin.eu/CMDI/1.x/xsd/cmd-component.xsd">
+    <Header>
+        <ID>clarin.eu:cr1:p_1311927752335</ID>
+        <Name>CLARINWebService</Name>
+        <Description>This is a core model which can be used as a basis for web service registry specific models. In principle this profile shouldn't be instantiated, instead new profiles can be created which extend the structure built by the components in this profile. Valid instantiations of these extensions allow validation of the core elements against the schema of this profile. More detailed information, including facilities to validate compliance with this core model, can be found at: http://www.isocat.org/clarin/ws/cmd-core/</Description>
+    <Status>production</Status></Header>
+    <Component CardinalityMax="1" CardinalityMin="1" name="CLARINWebService">
+        <!--
+        case minimum   maximum   check
+        1    UNK       UNK       OK
+        2    UNK       number    maximum ne 0
+        3    UNK       unbounded OK
+        4    number    UNK       minimum le 1
+        5    number    number    minimum le maximum
+        6    number    unbounded OK
+        7    unbounded UNK       NOK
+        8    unbounded number    NOK
+        9    unbounded unbounded OK
+        -->
+        <!-- case 1 (OK) -->
+        <Element Multilingual="false" cue:DisplayPriority="1" ValueScheme="string" name="Test1"/>
+        <!-- case 2 (OK) -->
+        <Element CardinalityMax="1" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test2ok"/>
+        <!-- case 2 (NOK) -->
+        <Element CardinalityMax="0" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test2nok"/>
+        <!-- case 3 (OK) -->
+        <Element CardinalityMax="unbounded" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test3"/>
+        <!-- case 4 (OK) -->
+        <Element CardinalityMin="0" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test4ok"/>
+        <!-- case 4 (NOK) -->
+        <Element CardinalityMin="9" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test4nok"/>
+        <!-- case 5 (OK) -->
+        <Element CardinalityMin="1" CardinalityMax="9" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test5ok"/>
+        <!-- case 5 (NOK) -->
+        <Element CardinalityMin="9" CardinalityMax="1" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test5nok"/>
+        <!-- case 6 (OK) -->
+        <Element CardinalityMin="9" CardinalityMax="unbounded" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test6"/>
+        <!-- case 7 (NOK) -->
+        <Element CardinalityMin="unbounded" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test7"/>
+        <!-- case 8 (NOK) -->
+        <Element CardinalityMin="unbounded" CardinalityMax="1" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test8"/>
+        <!-- case 9 (OK) -->
+        <Element CardinalityMin="unbounded" CardinalityMax="unbounded" Multilingual="false" cue:DisplayPriority="0" ValueScheme="string" name="Test9"/>
+    </Component>
+</ComponentSpec>
