@@ -1,5 +1,7 @@
 # CMDValidate
-A library for validating CMD component specifications using XSD and Schematron
+A library for validating CMD component specifications using XSD and Schematron.
+
+For the validation of CMDI instances (metadata records), see [cmdi-instance-validator](https://github.com/clarin-eric/cmdi-instance-validator).
 
 See also:
 - [Information at clarin.eu/cmdi](https://www.clarin.eu/cmdi)

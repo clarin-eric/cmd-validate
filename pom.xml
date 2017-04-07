@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>clarin.cmdi</groupId>
     <artifactId>cmd-validate</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <name>CMDValidate (CMDI 1.2)</name>
     <build>
         <plugins>
@@ -50,7 +50,7 @@
             <!-- To inherit its Saxon dependency -->
             <groupId>clarin.cmdi</groupId>
             <artifactId>cmd-toolkit</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.1</version>
         </dependency>
     </dependencies>
     <properties>
@@ -62,9 +62,9 @@
             <url>https://oss.sonatype.org/content/groups/public</url>
         </repository>
         <repository>
-            <id>cmdi.clarin.repository</id>
+            <id>CLARIN repository</id>
             <name>Clarin Repository</name>
-            <url>http://catalog.clarin.eu/ds/nexus/content/groups/public/</url>
+            <url>https://nexus.clarin.eu/content/groups/public/</url>
         </repository>                                                    
     </repositories>
     <distributionManagement>
