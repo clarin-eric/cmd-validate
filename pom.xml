@@ -49,7 +49,7 @@
             <!-- To inherit its Saxon dependency -->
             <groupId>clarin.cmdi</groupId>
             <artifactId>cmd-toolkit</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.4-beta1</version>
         </dependency>
     </dependencies>
     <properties>
