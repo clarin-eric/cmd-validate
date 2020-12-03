@@ -7,3 +7,7 @@ See also:
 - [Information at clarin.eu/cmdi](https://www.clarin.eu/cmdi)
 - [CMDI toolkit on GitHub](https://github.com/clarin-eric/cmdi-toolkit)
 - [CMDI Component Registry on GitHub](https://github.com/clarin-eric/component-registry-rest)
+
+## Requirements
+
+As of version 2.3.0, Java 11 or higher is required
